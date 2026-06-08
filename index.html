@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Farzam Shiran Jang | full-stack dev</title>
+  <!-- Google Fonts & Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      transition: background 0.3s ease, color 0.2s ease;
+      overflow-x: hidden;
+    }
+
+    :root {
+      --bg-primary: #fafcff;
+      --bg-secondary: #ffffff;
+      --surface: #ffffff;
+      --text-primary: #0a0f1c;
+      --text-secondary: #2d3a5e;
+      --accent: #5b7c99;
+      --accent-hover: #3e5e7c;
+      --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+      --border-light: #e9edf2;
+      --tag-bg: #eef2f8;
+      --footer-bg: #f1f4f9;
+      --glow: rgba(91, 124, 153, 0.2);
+      --contact-glass: rgba(255, 255, 255, 0.4);
+    }
+
+    body.dark {
+      --bg-primary: #0b1120;
+      --bg-secondary: #111827;
+      --surface: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e6;
+      --accent: #7aa5c2;
+      --accent-hover: #9bbeda;
+      --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      --border-light: #2d3a5e;
+      --tag-bg: #2d3a5e;
+      --footer-bg: #0f172a;
+      --glow: rgba(122, 165, 194, 0.25);
+      --contact-glass: rgba(30, 41, 59, 0.6);
+    }
+
+    /* reveal animations */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.2), transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+    }
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .stagger-child {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .stagger-child.revealed-stagger {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* loader */
+    .loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.6s ease, visibility 0.6s;
+    }
+    .loader {
+      width: 55px;
+      height: 55px;
+      border: 4px solid var(--border-light);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loader-hidden { opacity: 0; visibility: hidden; }
+
+    /* floating shapes */
+    .floating-shape {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .shape {
+      position: absolute;
+      background: radial-gradient(circle, var(--accent) 1%, transparent 70%);
+      opacity: 0.1;
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      50% { transform: translateY(-30px) translateX(20px) rotate(5deg); }
+      100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 2; }
+
+    /* header */
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg-primary) 75%, transparent);
+      z-index: 100;
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 0;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo a {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(130deg, var(--accent), #bbd4e8);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.25s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: var(--accent); transform: translateY(-2px); }
+
+    .theme-toggle {
+      background: var(--tag-bg);
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      border-radius: 60px;
+      transition: all 0.25s;
+    }
+    .theme-toggle:hover { background: var(--accent); color: white; transform: rotate(15deg) scale(1.05); }
+
+    /* buttons */
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 0.75rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      transition: 0.25s;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 25px -12px rgba(0,0,0,0.25);
+      background: var(--accent-hover);
+    }
+    .btn-outline:hover { background: var(--accent); color: white; }
+
+    /* hero */
+    .hero {
+      padding: 4rem 0 3rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+    }
+    .hero-content { flex: 1; }
+    .hero-badge {
+      background: var(--tag-bg);
+      display: inline-block;
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 var(--glow); }
+      70% { box-shadow: 0 0 0 8px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+    .hero-content h1 {
+      font-size: 3.6rem;
+      font-weight: 800;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .rotating-text {
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1rem 0;
+      border-left: 4px solid var(--accent);
+      padding-left: 1rem;
+    }
+    .hero-desc { font-size: 1.1rem; color: var(--text-secondary); max-width: 500px; margin-bottom: 2rem; }
+    .social-icons { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
+    .social-icons a {
+      font-size: 1.6rem;
+      color: var(--text-secondary);
+      transition: 0.2s;
+    }
+    .social-icons a:hover { color: var(--accent); transform: translateY(-6px) scale(1.1); }
+    .hero-avatar { flex: 0.8; text-align: center; }
+    .avatar-icon { font-size: 11rem; color: var(--accent); filter: drop-shadow(0 12px 20px rgba(0,0,0,0.15)); transition: 0.3s; }
+    .hero-avatar:hover .avatar-icon { transform: scale(1.02) rotate(3deg); }
+
+    /* sections */
+    section { padding: 5rem 0; border-bottom: 1px solid var(--border-light); }
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 2.5rem;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 65%;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    /* services grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .service-card {
+      background: var(--surface);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s;
+      border: 1px solid var(--border-light);
+    }
+    .service-card:hover { transform: translateY(-8px); border-color: var(--accent); }
+    .service-icon { font-size: 2.8rem; color: var(--accent); margin-bottom: 1rem; }
+    .service-card h3 { margin-bottom: 0.8rem; }
+
+    /* stats counters */
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .stat-item {
+      flex: 1;
+      background: var(--surface);
+      padding: 1.8rem;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border-light);
+    }
+    .stat-number {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .stat-label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+    /* skills grid */
+    .skills-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+    .skill-item {
+      background: var(--tag-bg);
+      padding: 0.7rem 1.4rem;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      transition: all 0.25s;
+      cursor: default;
+    }
+    .skill-item:hover { transform: translateY(-5px) scale(1.02); background: var(--accent); color: white; }
+    .skill-item:hover i { color: white; }
+
+    /* projects grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .project-card {
+      background: var(--surface);
+      border-radius: 1.8rem;
+      padding: 1.8rem;
+      box-shadow: var(--card-shadow);
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      border: 1px solid var(--border-light);
+    }
+    .project-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 30px 40px -18px rgba(0,0,0,0.25);
+      border-color: var(--accent);
+    }
+    .project-icon { font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; transition: 0.2s; }
+    .project-card:hover .project-icon { transform: scale(1.08); }
+    .project-card h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0; }
+    .project-tags span { background: var(--tag-bg); padding: 0.2rem 0.8rem; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+    .card-link { font-weight: 600; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+
+    /* contact enhanced */
+    .contact-flex { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; }
+    .contact-info { flex: 1; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+      padding: 0.8rem 1rem;
+      background: var(--contact-glass);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      border: 1px solid var(--border-light);
+      transition: all 0.25s;
+    }
+    .contact-item:hover {
+      transform: translateX(8px);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border-color: var(--accent);
+    }
+    .contact-item i { font-size: 1.6rem; color: var(--accent); width: 40px; }
+    .contact-link { font-weight: 600; color: var(--text-primary); text-decoration: none; cursor: pointer; }
+    .contact-link:hover { color: var(--accent); text-decoration: underline; }
+    .copy-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    /* scroll top button */
+    .scroll-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent);
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 99;
+    }
+    .scroll-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .scroll-top:hover { background: var(--accent-hover); transform: translateY(-3px); }
+
+    /* quick message card */
+    .quick-card {
+      background: var(--surface);
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid var(--border-light);
+      text-align: center;
+      transition: 0.25s;
+    }
+    .quick-card:hover { transform: translateY(-6px); box-shadow: var(--card-shadow); }
+
+    /* detail page virtual */
+    .detail-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg-primary);
+      z-index: 1000;
+      padding: 2rem;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .detail-page.active { transform: translateX(0); }
+    .back-btn {
+      background: var(--accent);
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 40px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 2rem;
+    }
+
+    /* footer */
+    .footer { text-align: center; padding: 2rem 0; background: var(--footer-bg); font-size: 0.85rem; }
+
+    @media (max-width: 800px) {
+      .hero { flex-direction: column-reverse; text-align: center; }
+      .hero-content { text-align: center; }
+      .social-icons { justify-content: center; }
+      .section-title:after { left: 50%; transform: translateX(-50%); width: 80px; }
+      .section-title { display: block; text-align: center; }
+      .rotating-text { border-left: none; padding-left: 0; text-align: center; }
+      .stats-grid { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="loader-wrapper" id="loader"><div class="loader"></div></div>
+<div class="floating-shape">
+  <div class="shape" style="width: 200px; height: 200px; top: 10%; left: -50px;"></div>
+  <div class="shape" style="width: 300px; height: 300px; bottom: 5%; right: -80px; animation-delay: 2s;"></div>
+  <div class="shape" style="width: 150px; height: 150px; top: 40%; left: 70%;"></div>
+</div>
+
+<header>
+  <div class="container nav-bar">
+    <div class="logo"><a href="#">FSJ</a></div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#projects">Work</a>
+      <a href="#contact">Contact</a>
+      <button class="theme-toggle" id="darkmode-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="home">
+    <div class="container hero">
+      <div class="hero-content reveal-on-scroll">
+        <div class="hero-badge">✦  full-stack alchemist  ✦</div>
+        <h1>Farzam Shiran Jang</h1>
+        <div class="rotating-text" id="rotatingRole">Building the web</div>
+        <p class="hero-desc">Developer based in Tabriz, Iran. Crafting clean interfaces, robust backends, and creative solutions.</p>
+        <div class="btn-group">
+          <a href="#projects" class="btn">View projects →</a>
+          <a href="#contact" class="btn btn-outline">Let's talk</a>
+        </div>
+        <div class="social-icons">
+          <a href="https://github.com/farzam-f" target="_blank"><i class="fab fa-github"></i></a>
+          <a href="https://t.me/flwfsj" target="_blank"><i class="fab fa-telegram"></i></a>
+        </div>
+      </div>
+      <div class="hero-avatar reveal-on-scroll">
+        <i class="fas fa-code avatar-icon"></i>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title reveal-on-scroll">about me</h2>
+      <div class="about-text reveal-on-scroll">
+        <p>Hey! I'm <strong>Farzam Shiran Jang</strong> — a self-taught developer and problem solver from <strong>Tabriz, Iran</strong>. I turn ideas into digital experiences, from sleek frontends to performant backends.</p>
+        <p style="margin-top: 1rem;">Currently diving deep into React, Node.js, and AI integrations. Outside coding, I enjoy coffee, local tech meetups, and open-source.</p>
+      </div>
+      <div style="margin-top: 2.5rem;">
+        <h3 class="reveal-on-scroll" style="margin-bottom: 1rem;">⚡ tech & tools</h3>
+        <div class="skills-grid" id="skillsGrid">
+          <span class="skill-item stagger-child"><i class="fab fa-html5"></i> HTML5</span>
+          <span class="skill-item stagger-child"><i class="fab fa-css3-alt"></i> CSS3 / Tailwind</span>
+          <span class="skill-item stagger-child"><i class="fab fa-js"></i> JavaScript</span>
+          <span class="skill-item stagger-child"><i class="fab fa-react"></i> React / Next</span>
+          <span class="skill-item stagger-child"><i class="fab fa-node-js"></i> Node.js</span>
+          <span class="skill-item stagger-child"><i class="fas fa-database"></i> MongoDB / PG</span>
+          <span class="skill-item stagger-child"><i class="fab fa-git-alt"></i> Git</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="container">
+      <h2 class="section-title reveal-on-scroll">what i do</h2>
+      <div class="services-grid">
+        <div class="service-card reveal-on-scroll"><i class="fas fa-laptop-code service-icon"></i><h3>Web Development</h3><p>Custom websites, SPAs, and responsive designs with modern frameworks.</p></div>
+        <div class="service-card reveal-on-scroll"><i class="fas fa-mobile-alt service-icon"></i><h3>UI/UX Engineering</h3><p>Interactive, accessible interfaces with smooth animations.</p></div>
+        <div class="service-card reveal-on-scroll"><i class="fas fa-server service-icon"></i><h3>Backend APIs</h3><p>RESTful services, databases, and server-side logic.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stats">
+    <div class="container">
+      <h2 class="section-title reveal-on-scroll">milestones</h2>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-item stagger-child"><div class="stat-number" data-target="24">0</div><div class="stat-label">Projects completed</div></div>
+        <div class="stat-item stagger-child"><div class="stat-number" data-target="5">0</div><div class="stat-label">Years experience</div></div>
+        <div class="stat-item stagger-child"><div class="stat-number" data-target="12">0</div><div class="stat-label">Happy clients</div></div>
+        <div class="stat-item stagger-child"><div class="stat-number" data-target="48">0</div><div class="stat-label">Coffee cups / month</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="container">
+      <h2 class="section-title reveal-on-scroll">featured projects</h2>
+      <div class="projects-grid" id="projectsGrid">
+        <div class="project-card stagger-child" data-project="portfolio"><div class="project-icon"><i class="fas fa-chart-line"></i></div><h3>Portfolio 2025</h3><p>Minimal responsive site with dark mode & animations.</p><div class="project-tags"><span>HTML/CSS</span><span>JS</span></div><div class="card-link">Explore →</div></div>
+        <div class="project-card stagger-child" data-project="weather"><div class="project-icon"><i class="fas fa-cloud-sun"></i></div><h3>Weather Dashboard</h3><p>Real-time weather app with forecasts & maps.</p><div class="project-tags"><span>React</span><span>API</span></div><div class="card-link">Case study →</div></div>
+        <div class="project-card stagger-child" data-project="taskflow"><div class="project-icon"><i class="fas fa-tasks"></i></div><h3>TaskFlow</h3><p>Drag & drop productivity tool with local storage.</p><div class="project-tags"><span>Vanilla JS</span></div><div class="card-link">Explore →</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <h2 class="section-title reveal-on-scroll">connect with me</h2>
+      <div class="contact-flex">
+        <div class="contact-info">
+          <p class="reveal-on-scroll" style="margin-bottom: 1.8rem;">Open for collaborations, freelance work, or tech chat.</p>
+          <div class="contact-item reveal-on-scroll"><i class="fab fa-telegram"></i><a href="https://t.me/flwfsj" target="_blank" class="contact-link">@flwfsj</a><span>— Telegram</span></div>
+          <div class="contact-item reveal-on-scroll"><i class="fab fa-github"></i><a href="https://github.com/farzam-f" target="_blank" class="contact-link">farzam-f</a><span>— GitHub</span></div>
+          <div class="contact-item reveal-on-scroll" id="emailCopyItem"><i class="fas fa-envelope"></i><span class="contact-link" id="emailToCopy">farzam.pc1389@gmail.com</span><span>— Gmail (click to copy)</span></div>
+          <div class="contact-item reveal-on-scroll"><i class="fas fa-map-marker-alt"></i><span class="contact-link">Tabriz, Iran</span><span>— Location</span></div>
+        </div>
+        <div class="reveal-on-scroll" style="flex:1;"><div class="quick-card"><i class="fas fa-paper-plane" style="font-size: 2rem; color: var(--accent);"></i><h3>Quick message</h3><p>I reply within 24h on Telegram.</p><a href="https://t.me/flwfsj" target="_blank" class="btn" style="width:100%;"><i class="fab fa-telegram"></i> Message me on Telegram</a></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="detailContainer"></div>
+<div id="copyToast" class="copy-toast">📋 Email copied!</div>
+<div id="scrollTopBtn" class="scroll-top"><i class="fas fa-arrow-up"></i></div>
+
+<footer class="footer"><div class="container"><p>© <span id="currentYear"></span> Farzam Shiran Jang — built with <i class="fas fa-heart" style="color: var(--accent);"></i> in Tabriz</p></div></footer>
+
+<script>
+  (function(){
+    // loader
+    const loader = document.getElementById('loader');
+    window.addEventListener('load', () => setTimeout(() => loader?.classList.add('loader-hidden'), 400));
+
+    // AUTO DOWNLOAD file.txt when site opens
+    function downloadFileTxt() {
+      const content = `Hello! 👋\n\nThanks for visiting my portfolio.\n\n— Farzam Shiran Jang\n📍 Tabriz, Iran\n📧 farzam.pc1389@gmail.com\n💬 Telegram: @flwfsj\n🐙 GitHub: farzam-f\n\nThis file was automatically downloaded from my personal website. Let's build something great!`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = 'file.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+    // Slight delay to not interfere with loader
+    setTimeout(downloadFileTxt, 800);
+
+    // rotating text
+    const roles = ["⚛️ React Developer", "🐍 Full-Stack Coder", "🎨 UI/UX enthusiast", "🚀 Open Source contributor"];
+    let idx = 0;
+    const rotatingEl = document.getElementById("rotatingRole");
+    if(rotatingEl) {
+      const update = () => { rotatingEl.style.opacity = "0"; setTimeout(() => { rotatingEl.textContent = roles[idx]; rotatingEl.style.opacity = "1"; idx = (idx+1)%roles.length; }, 180); };
+      rotatingEl.style.transition = "opacity 0.2s";
+      rotatingEl.textContent = roles[0];
+      setInterval(update, 2800);
+    }
+
+    // dark mode
+    const toggle = document.getElementById("darkmode-toggle");
+    const iconToggle = toggle?.querySelector("i");
+    const setTheme = (theme) => {
+      if(theme === "dark") { document.body.classList.add("dark"); iconToggle?.classList.replace("fa-moon", "fa-sun"); localStorage.setItem("theme", "dark"); }
+      else { document.body.classList.remove("dark"); iconToggle?.classList.replace("fa-sun", "fa-moon"); localStorage.setItem("theme", "light"); }
+    };
+    const stored = localStorage.getItem("theme");
+    if(stored === "dark") setTheme("dark");
+    else if(stored === "light") setTheme("light");
+    else if(window.matchMedia("(prefers-color-scheme: dark)").matches) setTheme("dark");
+    else setTheme("light");
+    toggle?.addEventListener("click", () => setTheme(document.body.classList.contains("dark") ? "light" : "dark"));
+
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+    // Intersection Observer for reveal
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          if(entry.target.id === "skillsGrid" || entry.target.id === "projectsGrid" || entry.target.id === "statsGrid") {
+            const children = entry.target.querySelectorAll(".stagger-child");
+            children.forEach((ch, i) => setTimeout(() => ch.classList.add("revealed-stagger"), i * 70));
+          }
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll(".reveal-on-scroll").forEach(el => revealObs.observe(el));
+    document.querySelectorAll("#skillsGrid, #projectsGrid, #statsGrid").forEach(el => revealObs.observe(el));
+
+    // Animated counters
+    const counters = document.querySelectorAll('.stat-number');
+    const animateCounter = (el) => {
+      const target = parseInt(el.getAttribute('data-target'));
+      let current = 0;
+      const increment = target / 50;
+      const updateCounter = () => {
+        current += increment;
+        if(current < target) { el.innerText = Math.ceil(current); requestAnimationFrame(updateCounter); }
+        else el.innerText = target;
+      };
+      updateCounter();
+    };
+    const statObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting) {
+          const numbers = entry.target.querySelectorAll('.stat-number');
+          numbers.forEach(num => animateCounter(num));
+          statObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsGrid = document.getElementById('statsGrid');
+    if(statsGrid) statObserver.observe(statsGrid);
+
+    // copy email
+    const emailItem = document.getElementById('emailCopyItem');
+    const toast = document.getElementById('copyToast');
+    if(emailItem) {
+      emailItem.addEventListener('click', () => {
+        const email = document.getElementById('emailToCopy')?.innerText;
+        if(email) { navigator.clipboard.writeText(email); toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 2000); }
+      });
+    }
+
+    // scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => { if(window.scrollY > 400) scrollBtn.classList.add('show'); else scrollBtn.classList.remove('show'); });
+    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // project details virtual pages
+    const projectsData = {
+      portfolio: { title: "Portfolio 2025", fullDesc: "Modern responsive portfolio with dark mode, scroll animations, and contact integration.", tech: "HTML, CSS, JS" },
+      weather: { title: "Weather Dashboard", fullDesc: "Real-time weather app using OpenWeather API, forecasts, and dynamic backgrounds.", tech: "React, Axios, Chart.js" },
+      taskflow: { title: "TaskFlow", fullDesc: "Productivity tool with drag & drop, local storage persistence, and dark theme.", tech: "JavaScript, LocalStorage, Drag & Drop" }
+    };
+    function createDetailPage(projectId) {
+      const data = projectsData[projectId];
+      if(!data) return;
+      const existing = document.getElementById("detailPage");
+      if(existing) existing.remove();
+      const detailDiv = document.createElement("div");
+      detailDiv.className = "detail-page";
+      detailDiv.id = "detailPage";
+      detailDiv.innerHTML = `<div class="container" style="max-width:900px;"><button class="back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Back</button><div class="detail-content"><h1>${data.title}</h1><p>${data.fullDesc}</p><p><strong>Tech:</strong> ${data.tech}</p><div style="margin-top:2rem;"><a href="#" class="btn">Live preview</a> <a href="#" class="btn btn-outline">GitHub</a></div></div></div>`;
+      document.body.appendChild(detailDiv);
+      setTimeout(() => detailDiv.classList.add("active"), 10);
+      document.getElementById("closeDetailBtn")?.addEventListener("click", () => { detailDiv.classList.remove("active"); setTimeout(() => detailDiv.remove(), 400); });
+    }
+    document.querySelectorAll(".project-card").forEach(card => {
+      card.addEventListener("click", (e) => { const proj = card.getAttribute("data-project"); if(proj && projectsData[proj]) createDetailPage(proj); else createDetailPage("portfolio"); });
+    });
+
+    // smooth nav
+    document.querySelectorAll(".nav-links a[href^='#']").forEach(link => {
+      link.addEventListener("click", function(e) {
+        const hash = this.getAttribute("href");
+        if(hash && hash !== "#") { const target = document.querySelector(hash); if(target) { e.preventDefault(); target.scrollIntoView({ behavior: "smooth" }); history.pushState(null, null, hash); } }
+      });
+    });
+    if(window.location.hash) { const el = document.querySelector(window.location.hash); if(el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100); }
+  })();
+</script>
+</body>
+</html>
